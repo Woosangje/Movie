@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- tbl_noti_reply 테이블에 필요한 SQL을 작성 -->
+<mapper namespace="com.firstgroup.movies.mapper.NotiReplyMapper"><!-- 인터페이스 경로 -->
+
+
+	<insert id="insert">
+	<!-- NotiReplyMapper.java의 insert메소드를 SQL로 처리 -->
+		insert into tbl_noti_reply (rno, bno, reply, replyer)
+		values (seq_noti_reply.nextval, #{bno}, #{reply}, #{replyer})
+
+	</insert>
+
+	<select id="read"
+		resultType="com.firstgroup.movies.domain.NotiReplyVO">
+	<!-- NotiReplyMapper.java의 read메소드를 SQL로 처리 -->
+		select * from tbl_noti_reply where rno = #{rno}
+
+	</select>
+
+	<delete id="delete">
+	<!-- NotiReplyMapper.java의 delete메소드를 SQL로 처리 -->
+		delete from tbl_noti_reply where rno = #{rno}
+
+	</delete>
+
+	<update id="update">
+	<!-- NotiReplyMapper.java의 update메소드를 SQL로 처리 -->
+		update tbl_noti_reply set reply = #{reply}, updatedate = sysdate where rno =
+		#{rno}
+
+	</update>
+
+	<select id="getListWithPaging" resultType="com.firstgroup.movies.domain.NotiReplyVO">
+  	<!-- NotiReplyMapper.java의 getListWithPaging메소드를 SQL로 처리 -->
+  	<!-- 특정 게시물의 댓글을 가져온다. -->
+  	<![CDATA[
+  	select rno, bno, reply, replyer, replydate, updatedate
+  	from
+  	(
+  	select /*+INDEX(tbl_noti_reply idx_noti_reply)*/
+  		rownum rn, rno, bno, reply, replyer, replyDate, updatedate
+  	from tbl_noti_reply
+  	where bno = #{bno}
+  	and rno > 0
+  	and rownum <= #{cri.pageNum} *  #{cri.amount}
+  	) where rn > (#{cri.pageNum} -1) * #{cri.amount}
+  	]]>
+	</select>
+
+
+	<select id="getCountByBno" resultType="int">
+		<!-- 댓글의 숫자 파악 -->
+  <![CDATA[
+  select count(rno) from tbl_noti_reply where bno = #{bno} 
+  ]]>
+	</select>
+
+
+
+
+</mapper>

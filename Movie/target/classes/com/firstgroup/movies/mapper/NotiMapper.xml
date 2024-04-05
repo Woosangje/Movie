@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- tbl_noti_board 테이블에 필요한 SQL을 작성 -->
+<mapper namespace="com.firstgroup.movies.mapper.NotiMapper">
+
+	<select id="getList" resultType="com.firstgroup.movies.domain.NotiVO">
+	<!-- NotiMapper.java의 getList메소드를 SQL로 처리 -->
+  <![CDATA[
+  select * from tbl_noti_board where bno > 0
+  ]]>
+	</select>
+
+	<insert id="insert">
+	<!-- NotiMapper.java의 insert메소드를 SQL로 처리 -->
+		insert into tbl_noti_board (bno, title, content, writer)
+		values (seq_noti_board.nextval, #{title}, #{content}, #{writer} )
+	</insert>
+
+	<insert id="insertSelectKey">
+	<!-- NotiMapper.java의 insertSelectKey메소드를 SQL로 처리 -->
+		<selectKey keyProperty="bno" order="BEFORE"
+			resultType="long">
+			select seq_noti_board.nextval from dual
+		</selectKey>
+
+		insert into tbl_noti_board (bno, title, content, writer)
+		values (#{bno}, #{title}, #{content}, #{writer} )
+
+	</insert>
+
+
+	<select id="read" resultType="com.firstgroup.movies.domain.NotiVO">
+	<!-- NotiMapper.java의 read메소드를 SQL로 처리 -->
+		select * from tbl_noti_board where bno = #{bno}
+	</select>
+	<update id="update">
+		update tbl_noti_board
+		set title = #{title},
+		content = #{content},
+		writer = #{writer},
+		updateDate = sysdate
+		where bno = #{bno}
+	</update>
+
+
+
+
+	<delete id="delete">
+	<!-- NotiMapper.java의 delete메소드를 SQL로 처리 -->
+		delete from tbl_noti_board where bno = #{bno}
+	</delete>
+
+	<select id="getListWithPaging" resultType="com.firstgroup.movies.domain.NotiVO">
+	<!-- NotiMapper.java의 getListWithPaging메소드를 SQL로 처리 -->
+  <![CDATA[
+   select 
+     bno, title, content, writer, regdate, updatedate
+   from 
+       (
+       select /*+INDEX_DESC(tbl_noti_board noti_pk) */
+         rownum rn, bno, title, content, writer, regdate, updatedate 
+       from 
+         tbl_noti_board
+      where rownum <= #{pageNum} * #{amount}
+      )
+  where rn > (#{pageNum} -1) * #{amount}
+ 
+  ]]>
+	</select>
+
+	<select id="getTotalCount" resultType="int">
+	<!-- NotiMapper.java의 getTotalCount메소드를 SQL로 처리 -->
+		select count(*) from tbl_noti_board where bno >0
+	</select>
+
+
+</mapper>
