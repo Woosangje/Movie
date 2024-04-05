@@ -238,30 +238,7 @@ padding: 10px 10px 0 10px;
 <%@ include file="/WEB-INF/views/common/footer.jsp" %>
 <script type="text/javascript" >
 
-let button = document.getElementById("addReplyBtn");
-button.addEventListener("click", function(e) {
-//댓글쓰기 버튼 누르면 모달창이 보이게 된다.   
-	e.preventDefault(); // 'e'를 사용하여 이벤트의 기본 동작을 방지
-     if (confirm("댓글을 수정하시겠습니까?")) {
-			/*  modal.find("input").val("");
-	         modal.find("input[name='replyer']").val(replyer);
-	         modalInputReplyDate.closest("div").hide();
-	         modal.find("button[id !='modalCloseBtn']").hide();
-	          
-	         modalRegisterBtn.show(); */
-	         
-	         $(".modal").modal("show");
-	        
-	     
-        
-     }
- });
-
-
-
-
 $(document).ready(function(){
-	
 	
 	var bnoValue = '<c:out value="${notice.bno}"/>';
 	var replyUL = $(".chat");
@@ -332,194 +309,172 @@ $(document).ready(function(){
 			next = true;
 		}
 		
-		  var str = "<ul class='pagination pull-right'>";
+		var str = "<ul class='pagination pull-right'>";
 	      
-	      if(prev){
-	        str+= "<li class='page-item'><a class='page-link' href='"+(startNum -1)+"'>Previous</a></li>";
-	      }
+	  	if(prev){
+	    	str+= "<li class='page-item'><a class='page-link' href='"+(startNum -1)+"'>Previous</a></li>";
+	    }
 	      
-	      for(var i = startNum ; i <= endNum; i++){
+	    for(var i = startNum ; i <= endNum; i++){
 	        
-	        var active = pageNum == i? "active":"";
+	      var active = pageNum == i? "active":"";
 	        
-	        str+= "<li class='page-item "+active+" '><a class='page-link' href='"+i+"'>"+i+"</a></li>";
-	      }
+	      str+= "<li class='page-item "+active+" '><a class='page-link' href='"+i+"'>"+i+"</a></li>";
+	   	}
 	      
-	      if(next){
-	        str+= "<li class='page-item'><a class='page-link' href='"+(endNum + 1)+"'>Next</a></li>";
-	      }
+	    if(next){
+	      str+= "<li class='page-item'><a class='page-link' href='"+(endNum + 1)+"'>Next</a></li>";
+	    }
+	    
 		str += "</ul></div>";
 		
 		console.log(str);
 		replyPageFooter.html(str);
 	}
 		
-		replyPageFooter.on("click", "li a", function(e){
-			// 페이지의 번호를 클릭했을 때 새로운 댓글리스트을 가져온다.
-			e.preventDefault();
-			console.log("page click");
+	replyPageFooter.on("click", "li a", function(e){
+		// 페이지의 번호를 클릭했을 때 새로운 댓글리스트을 가져온다.
+		e.preventDefault();
+		console.log("page click");
 			
-			var targetPageNum = $(this).attr("href");
+		var targetPageNum = $(this).attr("href");
 			
-			pageNum = targetPageNum;
+		pageNum = targetPageNum;
 			
-			showList(pageNum);
-			
-		});
+		showList(pageNum);
+	});
 		
-		//댓글 수정 이벤트
-	    modalModBtn.on("click", function(e){
+	var modal = $(".modal");
+	var modalInputReply = modal.find("input[name='reply']");
+	var modalInputReplyer = modal.find("input[name='replyer']");
+	var modalInputReplyDate = modal.find("input[name='replyDate']");
 	    
-		   
-		    
-	    	// 모달창에 있는 'data-rno'값을 이용
-	     	  var reply = {rno:modal.data("rno"), reply: modalInputReply.val()};
-	     	  
-	     	  replyService.update(reply, function(result){
-	     	        
-	     	    alert(result);
-	     	    modal.modal("hide");
-	     	    showList(pageNum);
-	     	    
-	     	  });
-	     	  
-	     	});
-
-		// 댓글 삭제 이벤트
-		modalRemoveBtn.on("click", function(e){
-			
-			// 모달창에 있는 'data-rno'값을 이용
-			var rno = modal.data("rno");
-			
-			replyService.remove(rno, function(result){
-				
-				alert(result);
-				modal.modal("hide");//모달 숨기기
-				showList(pageNum);//리스트 갱신
-			});
-			
-		});
-		
-		 var modal = $(".modal");
-		    var modalInputReply = modal.find("input[name='reply']");
-		    var modalInputReplyer = modal.find("input[name='replyer']");
-		    var modalInputReplyDate = modal.find("input[name='replyDate']");
-		    
-		    var modalModBtn = $("#modalModBtn");
-		    var modalRemoveBtn = $("#modalRemoveBtn");
-		    var modalRegisterBtn = $("#modalRegisterBtn");
-		    
-		    $("#modalCloseBtn").on("click", function(e){
-		    	
-		    	modal.modal('hide');
-		    });
-		   /* 
-		    $("#addReplyBtn").on("click", function(e){
-		    	//댓글쓰기 버튼 누르면 모달창이 보이게 된다.
+	var modalModBtn = $("#modalModBtn");
+	var modalRemoveBtn = $("#modalRemoveBtn");
+	var modalRegisterBtn = $("#modalRegisterBtn");
+	    
+	$("#modalCloseBtn").on("click", function(e){
+	    	
+	  modal.modal('hide');
+	});
+	$("#addReplyBtn").on("click", function(e){
+	    	//댓글쓰기 버튼 누르면 모달창이 보이게 된다.
+	        
+	    	 modal.find("input").val("");
+	         modal.find("input[name='replyer']").val(replyer);
+	         modalInputReplyDate.closest("div").hide();
+	         modal.find("button[id !='modalCloseBtn']").hide();
+	         
+	         modalRegisterBtn.show();
+	         
+	         $(".modal").modal("show");
+	        
+	      });
+	modalRegisterBtn.on("click",function(e){
+	//모달 등록 이벤트 핸들러
+			    
+	// 입력된 댓글, 댓글 작성자, bno 값을 가져와서 reply 객체에 저장합니다.
+	var reply = {
+		reply: modalInputReply.val(),// 모달에서 입력한 댓글 내용
+		replyer:modalInputReplyer.val(),// 모달에서 입력한 댓글 작성자
+		bno:bnoValue// bno 값
+	};
+			        
+	// replyService의 add 함수를 호출하여 댓글을 추가합니다.
+	// reply 객체와 결과를 처리하는 콜백 함수를 전달합니다.
+	replyService.add(reply, function(result){
+			          
+	alert(result);// 결과를 알리는 팝업을 표시합니다
+			      
+	// 모달에 입력된 값을 초기화합니다.
+	modal.find("input").val("");
+	modal.modal("hide");
+			          
+	// 댓글 목록을 갱신하기 위해 showList 함수를 호출합니다.
+	// -1을 인수로 전달하여 마지막 페이지를 다시 로드합니다.
+	showList(-1);
+			          
+	});
+			        
+});
+	
+//댓글 li 클릭시 이벤트 처리  
+$(".chat").on("click", "li", function(e){
+		    	  
+	var rno = $(this).data("rno");//클릭한 li요소에서 rno 데이터 속성을 가져온다.
 		        
-		    	 modal.find("input").val("");
-		         modal.find("input[name='replyer']").val(replyer);
-		         modalInputReplyDate.closest("div").hide();
-		         modal.find("button[id !='modalCloseBtn']").hide();
-		         
-		         modalRegisterBtn.show();
-		         
-		         $(".modal").modal("show");
+	replyService.get(rno, function(reply){
 		        
-		      });
- */
-		    $(document).ajaxSend(function(e, xhr, options) { 
-		    	//Ajax요청전에 CSRF토큰을 요청 헤더에 추가하는 작업을 수행한다. 보안상의 이유로 필요한 경우에 사용
-		       xhr.setRequestHeader(csrfHeaderName, csrfTokenValue); //헤더의 이름과 값을 지정
-		    }); 
-		    
-		    modalRegisterBtn.on("click",function(e){
-		    //모달 등록 이벤트 핸들러
-		    
-		    	// 입력된 댓글, 댓글 작성자, bno 값을 가져와서 reply 객체에 저장합니다.
-		        var reply = {
-		              reply: modalInputReply.val(),// 모달에서 입력한 댓글 내용
-		              replyer:modalInputReplyer.val(),// 모달에서 입력한 댓글 작성자
-		              bno:bnoValue// bno 값
-		        };
-		        
-		     	// replyService의 add 함수를 호출하여 댓글을 추가합니다.
-		        // reply 객체와 결과를 처리하는 콜백 함수를 전달합니다.
-		    	replyService.add(reply, function(result){
+	modalInputReply.val(reply.reply);
+	modalInputReplyer.val(reply.replyer);
+	modalInputReplyDate.val(replyService.displayTime( reply.replyDate))
+	.attr("readonly","readonly");
+	//모달 창의 입력란에 댓글 작성일을 표시하고, readonly속성을 추가하여 수정하지 못한다.
+	modal.data("rno", reply.rno);
+	          
+	modal.find("button[id !='modalCloseBtn']").hide();
+	modalModBtn.show();
+	modalRemoveBtn.show();
 		          
-		          alert(result);// 결과를 알리는 팝업을 표시합니다
-		      
-		          // 모달에 입력된 값을 초기화합니다.
-		          modal.find("input").val("");
-		         
-		          modal.modal("hide");
-		          
-		      	 // 댓글 목록을 갱신하기 위해 showList 함수를 호출합니다.
-		         // -1을 인수로 전달하여 마지막 페이지를 다시 로드합니다.
-		          showList(-1);
-		          
-		        });
-		        
-		      });
-		    
-		    
-		    $(".chat").on("click", "li", function(e){
-		    	//li 클릭시 이벤트 핸들러    
-		        var rno = $(this).data("rno");//클릭한 li요소에서 rno 데이터 속성을 가져온다.
-		        
-		        replyService.get(rno, function(reply){
-		        
-		          modalInputReply.val(reply.reply);
-		          modalInputReplyer.val(reply.replyer);
-		          modalInputReplyDate.val(replyService.displayTime( reply.replyDate))
-		          .attr("readonly","readonly");
-		          //모달 창의 입력란에 댓글 작성일을 표시하고, readonly속성을 추가하여 수정하지 못한다.
-		          modal.data("rno", reply.rno);
-		          
-		          modal.find("button[id !='modalCloseBtn']").hide();
-		          modalModBtn.show();
-		          modalRemoveBtn.show();
-		          
-		          $(".modal").modal("show");
+	$(".modal").modal("show");
 		              
-		        });
-		      });
-		    
-		    
-		    
-		    
-		    modalModBtn.on("click", function(e){
-		   	//수정하기 버튼 노출 유무 	  
-		     	  var reply = {rno:modal.data("rno"), reply: modalInputReply.val()};
-		     	  
-		     	  replyService.update(reply, function(result){
-		     	        
-		     	    alert(result);
-		     	    modal.modal("hide");
-		     	    showList(pageNum);
-		     	    
-		     	  });
-		     	  
-		     	});
-		    
-		    modalRemoveBtn.on("click", function (e){
-		    //제거하기 버튼 노출 유무 	   	  
-		     	  var rno = modal.data("rno");
-		     	  
-		     	  replyService.remove(rno, function(result){
-		     	        
-		     	      alert(result);
-		     	      modal.modal("hide");
-		     	      showList(pageNum);
-		     	      
-		     	  });
-		     	  
-		    });
-		    
-		    
-		    
+	});
+});  
+
+//댓글 수정 이벤트
+modalModBtn.on("click", function(e){
+  	// 모달창에 있는 'data-rno'값을 이용
+	var reply = {rno:modal.data("rno"), reply: modalInputReply.val()};
+     	
+	replyService.update(reply, function(result){
+     	        
+     alert(result);
+     modal.modal("hide");
+     showList(pageNum);
+     	    
+    });
+     	  
+});
+
+//댓글 삭제 이벤트
+modalRemoveBtn.on("click", function(e){
+	
+	// 모달창에 있는 'data-rno'값을 이용
+	var rno = modal.data("rno");
+	
+	replyService.remove(rno, function(result){
 		
-	var operForm = $("#operForm");
+		alert(result);
+		modal.modal("hide");//모달 숨기기
+		showList(pageNum);//리스트 갱신
+	});
+	
+});
+
+$(document).ajaxSend(function(e, xhr, options) { 
+	//Ajax요청전에 CSRF토큰을 요청 헤더에 추가하는 작업을 수행한다. 보안상의 이유로 필요한 경우에 사용
+	xhr.setRequestHeader(csrfHeaderName, csrfTokenValue); //헤더의 이름과 값을 지정
+}); 
+		
+
+var replyer = null;
+
+<sec:authorize access="isAuthenticated()">
+
+replyer = '<sec:authentication property="principal.username"/>';   
+
+</sec:authorize>
+/* 토큰 없으면 등록,수정시 405에러발생 */
+var csrfHeaderName ="${_csrf.headerName}"; 
+var csrfTokenValue="${_csrf.token}";
+
+});
+</script>
+
+
+<script>
+$(document).ready(function(){
+var operForm = $("#operForm");
 	
 	$("button[data-oper='modify']").on("click", function(e){
 		//수정하기 버튼 실행
@@ -532,19 +487,8 @@ $(document).ready(function(){
 		operForm.attr("action","/notice/list")//list페이지로 돌아간다.
 		operForm.submit();
 		    
-	});  
-	
-	
-	  var replyer = null;
-	    
-	    <sec:authorize access="isAuthenticated()">
-	    
-	    replyer = '<sec:authentication property="principal.username"/>';   
-	    
-		</sec:authorize>
-	 /* 토큰 없으면 등록,수정시 405에러발생 */
-	    var csrfHeaderName ="${_csrf.headerName}"; 
-	    var csrfTokenValue="${_csrf.token}";
-
+	});
 });
-</script>
+</script>	
+
+
