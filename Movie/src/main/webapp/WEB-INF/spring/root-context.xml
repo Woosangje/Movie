@@ -14,7 +14,7 @@
 	<!-- Root Context: defines shared resources visible to all other web components -->
 	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
         <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"/>
-        <property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@sorune.asuscomm.com:15210:XE" />
+        <property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:추가하기" />
 		<property name="username" value="movies"></property>
 		<property name="password" value="movies"></property>
 	</bean>
